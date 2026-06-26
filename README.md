@@ -15,8 +15,7 @@
 - 🎓 BS Computer Science @ **FAST NUCES Islamabad**
 - 💼 Intern @ **PMW 2026** — Platform & Web Engineering Track
 - 🛠️ Currently building **NOTY** — a Win32 C++ clipboard monitor tray app
-- 🧠 Interested in: Systems Programming, Digital Logic, Machine Learning
-- 💻 Daily driver: HP EliteBook 840 G7 · Windows 11 / Ubuntu dual-boot
+- 🧠 Interested in: Systems Programming, Software development, Machine Learning
 
 ---
 
@@ -41,13 +40,6 @@
 > A system tray application that monitors the clipboard and appends captured text to a file via a global hotkey.
 - Win32 API · `RegisterHotKey` · `SendInput` · Clipboard API
 - `.ini` config via `AppData` · Resource scripts · MinGW
-
----
-
-### ⚙️ ONYX-16 — 16-bit CPU Simulator
-> A fully functional 16-bit CPU simulator built from scratch in C++.
-- Custom instruction set architecture
-- Register file, ALU, memory, fetch-decode-execute cycle
 
 ---
 
@@ -80,8 +72,7 @@
 
 ## Academics
 
-- 📍 FAST NUCES Islamabad — Fall 2025 GPA: **3.37**
-- Courses: Data Structures · OOP · Digital Logic Design · ML · Multivariable Calculus
+- 📍 FAST NUCES Islamabad — Fall 2025 GPA: **3.42**
 
 ---
 
