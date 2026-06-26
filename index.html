@@ -32,6 +32,37 @@
   .brand{position:fixed;top:20px;left:24px;z-index:60;font-size:.85rem;letter-spacing:.25em;text-transform:uppercase;color:var(--text)}
   .brand .accent{color:var(--accent)}
 
+  /* ---------- TOP-RIGHT LOGO ---------- */
+  .logo-wrap{
+    position:fixed;top:18px;right:24px;z-index:60;
+    width:84px;height:84px;
+    border-radius:50%;
+    padding:4px;                       /* room for the rotating ring */
+    transition:transform .3s ease;
+  }
+  /* rotating cyan ring (no glow, just a sharp dashed conic ring) */
+  .logo-wrap::before{
+    content:"";position:absolute;inset:0;border-radius:50%;
+    background:conic-gradient(var(--accent) 0deg 40deg,transparent 40deg 90deg,
+              var(--accent) 90deg 130deg,transparent 130deg 180deg,
+              var(--accent) 180deg 220deg,transparent 220deg 270deg,
+              var(--accent) 270deg 310deg,transparent 310deg 360deg);
+    -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 3px));
+            mask:radial-gradient(farthest-side,transparent calc(100% - 3px),#000 calc(100% - 3px));
+    animation:ringSpin 8s linear infinite;
+  }
+  @keyframes ringSpin{to{transform:rotate(360deg)}}
+  .logo-wrap img{
+    position:relative;z-index:1;
+    width:100%;height:100%;
+    border-radius:50%;
+    object-fit:cover;                  /* centers the logo, crops plain edges */
+    border:1px solid var(--line);
+    display:block;
+  }
+  .logo-wrap:hover{transform:scale(1.08)}
+  @media(max-width:520px){.logo-wrap{width:62px;height:62px;top:14px;right:16px}}
+
   /* ---------- HERO ---------- */
   .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;position:relative}
   .tag{font-size:1.05rem;letter-spacing:.35em;color:var(--accent);border:1px solid var(--accent);padding:8px 18px;margin-bottom:28px;text-transform:uppercase}
@@ -73,33 +104,16 @@
   @keyframes cardGrad{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
   @keyframes comet{0%{transform:translate(-130%,-130%) rotate(25deg);opacity:1}100%{transform:translate(300%,300%) rotate(25deg);opacity:0}}
 
-  /* ---------- PMW (wider card + animated border + typing) ---------- */
-  .pmw{
-    position:relative;
-    max-width:1080px;                 /* wider */
-    margin:60px auto;
-    padding:48px 40px;
-    border:1px solid var(--line);
-    border-radius:18px;
-    background:var(--bg-2);
-    overflow:hidden;
-  }
-  /* animated cyan border sweep */
-  .pmw::before{
-    content:"";position:absolute;inset:-2px;border-radius:18px;z-index:0;
-    background:conic-gradient(from 0deg,transparent 0deg,var(--accent) 60deg,transparent 120deg,transparent 360deg);
-    animation:borderSpin 6s linear infinite;
-  }
-  .pmw::after{
-    content:"";position:absolute;inset:1px;border-radius:17px;background:var(--bg-2);z-index:0;
-  }
+  /* ---------- PMW ---------- */
+  .pmw{position:relative;max-width:1080px;margin:60px auto;padding:48px 40px;border:1px solid var(--line);border-radius:18px;background:var(--bg-2);overflow:hidden}
+  .pmw::before{content:"";position:absolute;inset:-2px;border-radius:18px;z-index:0;background:conic-gradient(from 0deg,transparent 0deg,var(--accent) 60deg,transparent 120deg,transparent 360deg);animation:borderSpin 6s linear infinite}
+  .pmw::after{content:"";position:absolute;inset:1px;border-radius:17px;background:var(--bg-2);z-index:0}
   @keyframes borderSpin{to{transform:rotate(360deg)}}
   .pmw > *{position:relative;z-index:1}
   .pmw h2{font-size:clamp(1.8rem,4.5vw,2.6rem);margin-bottom:22px;letter-spacing:.03em}
   .pmw h2 .accent{color:var(--accent)}
-  .pmw p{line-height:1.8;margin-bottom:16px;font-size:1.15rem;min-height:1.2em}  /* bigger text */
+  .pmw p{line-height:1.8;margin-bottom:16px;font-size:1.15rem;min-height:1.2em}
   .pmw .track-tag{display:inline-block;margin-top:14px;border:1px solid var(--accent);color:var(--accent);padding:8px 16px;letter-spacing:.2em;font-size:.9rem;text-transform:uppercase}
-  /* typing cursor */
   .type-cursor{display:inline-block;width:.6ch;background:var(--accent);margin-left:2px;animation:caret 1s steps(2,start) infinite}
   @keyframes caret{50%{opacity:0}}
 
@@ -122,6 +136,11 @@
   <div id="gridLayer"></div>
 
   <div class="brand"><span class="accent">TEAM</span> Portfolio</div>
+
+  <!-- TOP-RIGHT LOGO -->
+  <div class="logo-wrap">
+    <img src="image1.jpg" alt="DEVROOTS team logo">
+  </div>
 
   <!-- HERO -->
   <section class="hero" id="home">
@@ -215,29 +234,21 @@
     document.querySelectorAll("[data-enc]").forEach((el,i)=>setTimeout(()=>encrypt(el),i*180));
   });
 
-  /* ---------- Typewriter effect for PMW (runs once when scrolled into view) ---------- */
+  /* ---------- Typewriter effect for PMW ---------- */
   function typeWriter(el,text,done){
     const cursor=document.createElement("span");
     cursor.className="type-cursor";cursor.innerHTML="&nbsp;";
     el.textContent="";el.appendChild(cursor);
     let i=0;
     const iv=setInterval(()=>{
-      if(i<text.length){
-        cursor.insertAdjacentText("beforebegin",text[i]);
-        i++;
-      }else{
-        clearInterval(iv);
-        cursor.remove();           // remove cursor when this line finishes
-        if(done)done();
-      }
+      if(i<text.length){cursor.insertAdjacentText("beforebegin",text[i]);i++;}
+      else{clearInterval(iv);cursor.remove();if(done)done();}
     },22);
   }
   let pmwTyped=false;
   function runPmwTyping(){
-    if(pmwTyped)return;
-    pmwTyped=true;
-    const lines=[...document.querySelectorAll(".pmw .type")];
-    let idx=0;
+    if(pmwTyped)return;pmwTyped=true;
+    const lines=[...document.querySelectorAll(".pmw .type")];let idx=0;
     (function next(){
       if(idx>=lines.length)return;
       const el=lines[idx++];
@@ -245,10 +256,9 @@
     })();
   }
   const pmwSection=document.getElementById("pmw");
-  const pmwObserver=new IntersectionObserver((entries)=>{
+  new IntersectionObserver((entries)=>{
     entries.forEach(en=>{if(en.isIntersecting)runPmwTyping();});
-  },{threshold:0.35});
-  pmwObserver.observe(pmwSection);
+  },{threshold:0.35}).observe(pmwSection);
 
   /* ---------- Scroll: reveal, parallax, dock ---------- */
   const heroEl=document.getElementById("home");
