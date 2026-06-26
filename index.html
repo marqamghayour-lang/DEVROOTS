@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TEAM: DEVROOTS — PMW Internship 2026</title>
+<style>
+  :root{
+    --bg:#0a0c10;
+    --bg-2:#0f1218;
+    --line:#1c2230;
+    --text:#e6edf3;
+    --muted:#5b6573;
+    --accent:#00e5ff;
+    --mono:"SF Mono",ui-monospace,"JetBrains Mono","Fira Code",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--mono);-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+  /* ---------- BACKGROUND ---------- */
+  #bgCanvas{position:fixed;inset:0;width:100%;height:100%;z-index:-2;display:block}
+  #gridLayer{
+    position:fixed;inset:-20% -20% -20% -20%;z-index:-1;
+    background-image:
+      linear-gradient(var(--line) 1px,transparent 1px),
+      linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:48px 48px;opacity:.5;will-change:transform;
+  }
+
+  /* ---------- TOP-LEFT BRAND ---------- */
+  .brand{position:fixed;top:20px;left:24px;z-index:60;font-size:.85rem;letter-spacing:.25em;text-transform:uppercase;color:var(--text)}
+  .brand .accent{color:var(--accent)}
+
+  /* ---------- HERO ---------- */
+  .hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;position:relative}
+  .tag{font-size:1.05rem;letter-spacing:.35em;color:var(--accent);border:1px solid var(--accent);padding:8px 18px;margin-bottom:28px;text-transform:uppercase}
+  .team-name{font-size:clamp(2.6rem,9vw,6.5rem);font-weight:800;letter-spacing:.04em;line-height:1}
+  .team-name .accent{color:var(--accent)}
+  .program{margin-top:22px;font-size:clamp(.85rem,2vw,1.05rem);letter-spacing:.06em}
+  .track{margin-top:8px;font-size:clamp(.75rem,1.6vw,.95rem);color:var(--muted);letter-spacing:.12em;text-transform:uppercase}
+  .code{margin-top:8px;font-size:.9rem;color:var(--accent);letter-spacing:.3em}
+  .mission{margin-top:34px;max-width:640px;font-size:clamp(.9rem,2.2vw,1.15rem);border-left:2px solid var(--accent);padding-left:16px;text-align:left}
+  .scroll-hint{position:absolute;bottom:90px;font-size:.7rem;letter-spacing:.3em;color:var(--muted);animation:blink 1.6s steps(2,start) infinite}
+  @keyframes blink{50%{opacity:.2}}
+
+  /* ---------- MEMBERS ---------- */
+  .members-section{max-width:1200px;margin:0 auto;padding:90px 24px 60px}
+  .section-title{font-size:clamp(1.6rem,5vw,3rem);font-weight:800;letter-spacing:.04em;margin-bottom:8px}
+  .section-title .accent{color:var(--accent)}
+  .section-sub{color:var(--muted);font-size:.85rem;letter-spacing:.2em;text-transform:uppercase;margin-bottom:40px}
+  .reveal{opacity:0;transform:translateY(70px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.7,.2,1)}
+  .reveal.visible{opacity:1;transform:translateY(0)}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
+  @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:520px){.grid{grid-template-columns:1fr}}
+
+  .card{
+    position:relative;height:140px;
+    display:flex;align-items:center;justify-content:center;text-align:center;padding:18px;
+    background:var(--bg-2);border:1px solid var(--line);border-radius:16px;color:var(--text);
+    overflow:hidden;cursor:pointer;transform-style:preserve-3d;
+    box-shadow:0 0 10px rgba(0,229,255,.12);
+    transition:transform .2s ease,box-shadow .25s ease,color .25s ease,border-color .25s ease;
+  }
+  .card .label{font-size:1.6rem;font-weight:700;letter-spacing:.02em;position:relative;z-index:2;transition:opacity .25s ease}
+  .card .uni{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:1.6rem;font-weight:700;letter-spacing:.06em;opacity:0;z-index:2;transition:opacity .25s ease}
+  .card .comet{position:absolute;top:-40%;left:-40%;width:80%;height:80%;background:linear-gradient(115deg,transparent 38%,#ffffff 50%,transparent 62%);transform:translate(-130%,-130%);opacity:0;z-index:3}
+  .card:hover{color:var(--bg);border-color:var(--accent);background:linear-gradient(120deg,#00e5ff,#007a8a,#00e5ff);background-size:200% 200%;animation:cardGrad 3s ease infinite;box-shadow:0 0 16px rgba(0,229,255,.35)}
+  .card:hover .label{opacity:0}
+  .card:hover .uni{opacity:1;color:var(--bg)}
+  .card:hover .comet{animation:comet .85s ease forwards;opacity:1}
+  @keyframes cardGrad{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+  @keyframes comet{0%{transform:translate(-130%,-130%) rotate(25deg);opacity:1}100%{transform:translate(300%,300%) rotate(25deg);opacity:0}}
+
+  /* ---------- PMW (wider card + animated border + typing) ---------- */
+  .pmw{
+    position:relative;
+    max-width:1080px;                 /* wider */
+    margin:60px auto;
+    padding:48px 40px;
+    border:1px solid var(--line);
+    border-radius:18px;
+    background:var(--bg-2);
+    overflow:hidden;
+  }
+  /* animated cyan border sweep */
+  .pmw::before{
+    content:"";position:absolute;inset:-2px;border-radius:18px;z-index:0;
+    background:conic-gradient(from 0deg,transparent 0deg,var(--accent) 60deg,transparent 120deg,transparent 360deg);
+    animation:borderSpin 6s linear infinite;
+  }
+  .pmw::after{
+    content:"";position:absolute;inset:1px;border-radius:17px;background:var(--bg-2);z-index:0;
+  }
+  @keyframes borderSpin{to{transform:rotate(360deg)}}
+  .pmw > *{position:relative;z-index:1}
+  .pmw h2{font-size:clamp(1.8rem,4.5vw,2.6rem);margin-bottom:22px;letter-spacing:.03em}
+  .pmw h2 .accent{color:var(--accent)}
+  .pmw p{line-height:1.8;margin-bottom:16px;font-size:1.15rem;min-height:1.2em}  /* bigger text */
+  .pmw .track-tag{display:inline-block;margin-top:14px;border:1px solid var(--accent);color:var(--accent);padding:8px 16px;letter-spacing:.2em;font-size:.9rem;text-transform:uppercase}
+  /* typing cursor */
+  .type-cursor{display:inline-block;width:.6ch;background:var(--accent);margin-left:2px;animation:caret 1s steps(2,start) infinite}
+  @keyframes caret{50%{opacity:0}}
+
+  /* ---------- FOOTER ---------- */
+  footer{text-align:center;padding:48px 24px 120px;border-top:1px solid var(--line)}
+  .theme{font-size:.7rem;color:var(--muted);letter-spacing:.25em;text-transform:uppercase;margin-bottom:12px}
+  .made{font-size:.85rem;letter-spacing:.1em}
+  .made .accent{color:var(--accent)}
+
+  /* ---------- FLOATING DOCK ---------- */
+  .dock{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;gap:6px;padding:8px;background:rgba(15,18,24,.85);border:1px solid var(--line);backdrop-filter:blur(10px);border-radius:14px;z-index:50}
+  .dock a{color:var(--muted);text-decoration:none;font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;padding:10px 16px;border-radius:9px;transition:color .2s ease,background .2s ease,transform .2s ease}
+  .dock a:hover{color:var(--bg);background:var(--accent);transform:translateY(-4px)}
+  .dock a.active{color:var(--accent);border:1px solid var(--accent)}
+</style>
+</head>
+<body>
+
+  <canvas id="bgCanvas"></canvas>
+  <div id="gridLayer"></div>
+
+  <div class="brand"><span class="accent">TEAM</span> Portfolio</div>
+
+  <!-- HERO -->
+  <section class="hero" id="home">
+    <span class="tag" data-enc>TEAM:</span>
+    <h1 class="team-name"><span data-enc data-slow>DEV</span><span class="accent" data-enc data-slow>ROOTS</span></h1>
+    <div class="program" data-enc>PMW (PreserveMy.World) Internship 2026</div>
+    <div class="track" data-enc>Platform &amp; Web Engineering Track</div>
+    <div class="code" data-enc>TEAM CODE: AI-2</div>
+    <p class="mission" data-enc>To become an efficient web developer by help of PMW Lahore</p>
+    <span class="scroll-hint">SCROLL ↓</span>
+  </section>
+
+  <!-- MEMBERS -->
+  <section class="members-section" id="team">
+    <div class="reveal" id="membersBlock">
+      <h2 class="section-title">TEAM <span class="accent">MEMBERS</span></h2>
+      <div class="section-sub">16 Builders · Future Heritage Studio</div>
+      <div class="grid" id="grid"></div>
+    </div>
+  </section>
+
+  <!-- PMW -->
+  <section class="pmw" id="pmw">
+    <h2>About <span class="accent">PMW</span> Internship</h2>
+    <p class="type" data-type="PMW stands for PreserveMy.World. The PMW Internship offers students real industry exposure by working on real-world tasks. Interns select a track of their interest — such as Web Engineering, 3D Reconstruction, and more — and build practical skills by shipping actual work."></p>
+    <p class="type" data-type="Team DEVROOTS is part of the Platform & Web Engineering track, focused on building reliable, well-structured web systems."></p>
+    <span class="track-tag">Track: Web Engineering</span>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="theme">Visual Theme — Future Heritage Studio</div>
+    <div class="made">Made by <span class="accent">Muhammad Arqam</span></div>
+  </footer>
+
+  <!-- FLOATING DOCK -->
+  <nav class="dock" id="dock">
+    <a href="#home" data-sec="home">Home</a>
+    <a href="#team" data-sec="team">Team</a>
+    <a href="#pmw" data-sec="pmw">PMW</a>
+  </nav>
+
+<script>
+  /* ---------- Members ---------- */
+  const members=[
+    ["Abdullah","NUST"],["Ahmad Ali Shah","FAST"],["Aqdas Naseem Raja","FAST"],
+    ["Ayman Khan","NUST"],["Faseeh Ahmed","FAST"],["Fatima Asad","FAST"],
+    ["Kanza Malik","BNU"],["Muhammad Arqam Ghayour","FAST"],["Muhammad Fasih","LGS"],
+    ["Muhammad Hasnain Afkar","FAST"],["Muhammad Saad Bin Waqas","FAST"],
+    ["Muhammad Saad Saleem","FAST"],["Shafia Akhtar","IoBM"],["Shah Faisal","FAST"],
+    ["Umal Khan","FAST"],["Umar Asghar","FAST"]
+  ];
+  const grid=document.getElementById("grid");
+  members.forEach(([name,uni])=>{
+    const c=document.createElement("div");
+    c.className="card";
+    c.innerHTML=`<span class="comet"></span><span class="label">${name}</span><span class="uni">${uni}</span>`;
+    grid.appendChild(c);
+  });
+
+  /* ---------- Cursor-directed 3D tilt ---------- */
+  document.querySelectorAll(".card").forEach(card=>{
+    card.addEventListener("mousemove",e=>{
+      const r=card.getBoundingClientRect();
+      const px=(e.clientX-r.left)/r.width-0.5;
+      const py=(e.clientY-r.top)/r.height-0.5;
+      const max=20;
+      card.style.transform=`perspective(650px) rotateX(${(-py*max).toFixed(2)}deg) rotateY(${(px*max).toFixed(2)}deg) translateZ(16px)`;
+    });
+    card.addEventListener("mouseleave",()=>{card.style.transform="";});
+  });
+
+  /* ---------- Encrypted text effect ---------- */
+  const CHARS="ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!<>-_\\/[]{}=+*^?#";
+  function encrypt(el){
+    const slow=el.hasAttribute("data-slow");
+    const speed=slow?80:35;const baseFrames=slow?22:8;
+    const target=el.textContent;el.textContent="";
+    [...target].forEach((ch,i)=>{
+      const s=document.createElement("span");s.style.color="var(--muted)";el.appendChild(s);
+      let frame=0;const max=baseFrames+i*(slow?3:1);
+      const iv=setInterval(()=>{
+        if(ch===" "){s.textContent=" ";s.style.color="inherit";clearInterval(iv);return;}
+        if(frame>=max){s.textContent=ch;s.style.color="inherit";clearInterval(iv);}
+        else{s.textContent=CHARS[Math.floor(Math.random()*CHARS.length)];}
+        frame++;
+      },speed);
+    });
+  }
+  window.addEventListener("load",()=>{
+    document.querySelectorAll("[data-enc]").forEach((el,i)=>setTimeout(()=>encrypt(el),i*180));
+  });
+
+  /* ---------- Typewriter effect for PMW (runs once when scrolled into view) ---------- */
+  function typeWriter(el,text,done){
+    const cursor=document.createElement("span");
+    cursor.className="type-cursor";cursor.innerHTML="&nbsp;";
+    el.textContent="";el.appendChild(cursor);
+    let i=0;
+    const iv=setInterval(()=>{
+      if(i<text.length){
+        cursor.insertAdjacentText("beforebegin",text[i]);
+        i++;
+      }else{
+        clearInterval(iv);
+        cursor.remove();           // remove cursor when this line finishes
+        if(done)done();
+      }
+    },22);
+  }
+  let pmwTyped=false;
+  function runPmwTyping(){
+    if(pmwTyped)return;
+    pmwTyped=true;
+    const lines=[...document.querySelectorAll(".pmw .type")];
+    let idx=0;
+    (function next(){
+      if(idx>=lines.length)return;
+      const el=lines[idx++];
+      typeWriter(el,el.dataset.type,()=>setTimeout(next,250));
+    })();
+  }
+  const pmwSection=document.getElementById("pmw");
+  const pmwObserver=new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{if(en.isIntersecting)runPmwTyping();});
+  },{threshold:0.35});
+  pmwObserver.observe(pmwSection);
+
+  /* ---------- Scroll: reveal, parallax, dock ---------- */
+  const heroEl=document.getElementById("home");
+  const membersBlock=document.getElementById("membersBlock");
+  const dockLinks=[...document.querySelectorAll(".dock a")];
+  const sections={home:document.getElementById("home"),team:document.getElementById("team"),pmw:document.getElementById("pmw")};
+  const gridLayer=document.getElementById("gridLayer");
+
+  function onScroll(){
+    const y=window.scrollY;
+    if(y>=heroEl.offsetHeight*0.5)membersBlock.classList.add("visible");
+    gridLayer.style.transform=`translateY(${y*0.25}px)`;
+    let current="home";
+    for(const key in sections){
+      if(sections[key].getBoundingClientRect().top<=window.innerHeight*0.4)current=key;
+    }
+    dockLinks.forEach(a=>a.classList.toggle("active",a.dataset.sec===current));
+  }
+  window.addEventListener("scroll",onScroll);
+
+  /* ---------- Background: node network + scroll-reactive geometry ---------- */
+  const cv=document.getElementById("bgCanvas");
+  const ctx=cv.getContext("2d");
+  let W,H,nodes=[];
+  function resize(){
+    W=cv.width=window.innerWidth;H=cv.height=window.innerHeight;
+    nodes=[];
+    const count=Math.floor((W*H)/26000);
+    for(let i=0;i<count;i++) nodes.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*0.25,vy:(Math.random()-.5)*0.25});
+  }
+  resize();window.addEventListener("resize",resize);
+
+  function drawGeometry(){
+    const y=window.scrollY;
+    const cx=W*0.5,cy=H*0.5;
+    const rot=y*0.002;
+    const scale=120+Math.sin(y*0.004)*60;
+    const sides=6;
+    ctx.strokeStyle="rgba(0,229,255,0.25)";ctx.lineWidth=1.2;
+    for(let layer=0;layer<3;layer++){
+      const r=scale*(1+layer*0.5);
+      const rr=rot*(layer%2===0?1:-1);
+      ctx.beginPath();
+      for(let i=0;i<=sides;i++){
+        const a=rr+(i/sides)*Math.PI*2;
+        const x=cx+Math.cos(a)*r,yy=cy+Math.sin(a)*r;
+        i===0?ctx.moveTo(x,yy):ctx.lineTo(x,yy);
+      }
+      ctx.stroke();
+    }
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    const sf=window.scrollY*0.0008;
+    nodes.forEach(n=>{
+      n.x+=n.vx+Math.sin(sf+n.y*0.01)*0.3;
+      n.y+=n.vy+Math.cos(sf+n.x*0.01)*0.3;
+      if(n.x<0)n.x=W;if(n.x>W)n.x=0;
+      if(n.y<0)n.y=H;if(n.y>H)n.y=0;
+    });
+    for(let i=0;i<nodes.length;i++){
+      for(let j=i+1;j<nodes.length;j++){
+        const dx=nodes[i].x-nodes[j].x,dy=nodes[i].y-nodes[j].y;
+        const dist=Math.hypot(dx,dy);
+        if(dist<140){
+          ctx.strokeStyle=`rgba(0,229,255,${(1-dist/140)*0.18})`;
+          ctx.lineWidth=1;
+          ctx.beginPath();ctx.moveTo(nodes[i].x,nodes[i].y);ctx.lineTo(nodes[j].x,nodes[j].y);ctx.stroke();
+        }
+      }
+    }
+    ctx.fillStyle="rgba(0,229,255,0.5)";
+    nodes.forEach(n=>{ctx.fillRect(n.x-1,n.y-1,2,2);});
+    drawGeometry();
+    requestAnimationFrame(draw);
+  }
+  draw();
+  onScroll();
+</script>
+</body>
+</html>
