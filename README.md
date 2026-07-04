@@ -1,4 +1,3 @@
-```markdown
 # DEVROOTS
 
 **PMW Internship 2026 — Platform & Web Engineering Track**
