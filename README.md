@@ -21,7 +21,7 @@ Team DEVROOTS builds web systems that help preserve and present cultural heritag
 - Hosted on GitHub Pages
 
 ## Live site
-🔗 https://marqamghayour-lang.github.io/DEVROOT/
+🔗 https://marqamghayour-lang.github.io/DEVROOTS/
 
 ## Team members
 16 members from FAST, NUST, BNU, IoBM, and LGS working on the Platform & Web Engineering track for PMW Internship 2026.
